@@ -11,6 +11,10 @@ dat<-gsub('"','',dat)
 dat<-gsub('[]]','',dat)
 dat<-gsub('[[]','',dat)
 
+df<-data.frame(dat[-1,])
+names(df)<-dat[1,]
+names(df)[1]<-"population"
+
 get<-"P0010001"
 url<-paste("http://api.census.gov/data/2010/sf1?key=",key,"&get=",get,",NAME&for=place:*&in=state:25",sep="")
 aaa<-readLines(url)

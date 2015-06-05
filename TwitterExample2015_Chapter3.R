@@ -6,26 +6,37 @@ library(twitteR)
 library(RCurl)
 library(ROAuth)
 
+#Enter your own key!
+consumerKey<-
+consumerSecret<-
+accessToken<-
+accessSecret<-
 
-consumerKey<-"4pIbFQLAtkY2U2QckpkogLTaY"
-consumerSecret<-"Gae7HMTmuVtgZDRyU6BVrdFwwcWQfKew8TTzRUIi9Fth44Lg8O"
-accessToken<-"24096463-Dl4PGRWKSXQEysjSSSXhWjMT8evTEBraxNKLSAN4Q"
-accessSecret<-"sHz6hJPw1AZMAWNoCylO00X0y5kYHlaqcvpdlg8Xxw9eV"
-
-setup_twitter_oauth(consumerKey, consumerSecret,access_token=accessToken,access_secret=accessSecret)
+setup_twitter_oauth(consumerKey, consumerSecret,access_token=accessToken,
+                    access_secret=accessSecret)
 
 a<-getUser('statsinthewild')
 a$statusesCount
 a$followersCount
 a$friendsCount
+retweets(a$lastStatus$id)
+retweeters(a$lastStatus$id)
 
 a<-getUser('justinbieber')
 a$statusesCount
 a$followersCount
 a$friendsCount
 
+
+
 stuff<-searchTwitter("summer",n=50)
 stuff
+
+blm1<-searchTwitter("summer",until="2015-06-01",since="2015-05-31")
+blm1
+
+blm2<-searchTwitter("#blacklivesmatter",n=50,since="2014-06-01",until="2014-07-31")
+blm2
 
 stuffDF<-do.call(rbind,lapply(stuff,as.data.frame))
 stuffDF$text<-gsub("[^A-z #]","",stuffDF$text)
@@ -46,6 +57,7 @@ removePunctuationTwitter<-function(x){
 
 myCorpus <- Corpus(VectorSource(stuffDF$text))
 myCorpus<-tm_map(myCorpus, content_transformer(tolower))
+myCorpus<-tm_map(myCorpus,PlainTextDocument)
 myCorpus<-tm_map(myCorpus,removeWords,stopwords("english"))
 #Everything the same, but now I am calling a new function that I defined
 myCorpus<-tm_map(myCorpus,removePunctuationTwitter)

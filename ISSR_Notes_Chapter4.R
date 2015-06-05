@@ -18,7 +18,6 @@ evals <- evv$values[1:2]
 temp<-diag(1/sqrt(evals)) %*% t(pcs)%*%t(as.matrix(presTDM))
 PCs<-t(as.matrix(presTDM))%*%t(temp)
 
-
 plot(PCs[,1],PCs[,2],main="PC1 vs PC2: Pres Inaugural Speeches",xlab='PC1',ylab='PC2')
 text(PCs[,1],PCs[,2],substring(presTDM$dimnames$Docs,1,6))
   
@@ -28,7 +27,7 @@ text(PCs[,1],PCs[,2],substring(presTDM$dimnames$Docs,1,6))
 #Term frequency - Inverse document frequency
   m<-weightTfIdf(presTDM)
 d<-proxy::dist(as.matrix(t(m)), method = "eJaccard")
-cl <- kmeans(d, 3)
+cl <- kmeans(d, 2)
 table(cl$cluster)
 
 plot(PCs[,1],PCs[,2],main="PC1 vs PC2: k-means clustering",col="white")

@@ -61,7 +61,8 @@ teams
 resList<-list()
 #We will loop over all teams
 for (t in teams){print(t)
-                 url<-paste("http://www.baseball-reference.com/teams/",t,"/2014.shtml",sep="")
+                 url<-paste("http://www.baseball-reference.com/teams/",
+                            t,"/2014.shtml",sep="")
                  teamData<-readHTMLTable(url)
                  #Pull out the team batting component                  
                  output<-teamData$team_batting
@@ -69,7 +70,7 @@ for (t in teams){print(t)
                  output[,3]<-as.character(output[,3])
                  output[,3]<-gsub("[*#]","",output[,3])
                  #Store the output
-                 resList[[t]]<-output[output[,3]!="",]
+                 resList[[t]]<-output[output[,3]!="Name",]
 }
 
 
@@ -92,6 +93,7 @@ library(RCurl)
 library(XML)
 library(tm)
 presList<-list()
+
 url<-"http://www.presidentialrhetoric.com/historicspeeches/bush/first_inaugural.html"
 a<-getURL(url)
 b<-htmlParse(url)
@@ -129,11 +131,13 @@ names(presList)<-namesVec
 summary(presList)
 inspect(presList[1])
 
+#Cleaning the Corpus
 presList<-tm_map(presList,stripWhitespace)
 stopwords("english")
 presList<-tm_map(presList, removeWords, stopwords("english"))
 presList <- tm_map(presList, content_transformer(tolower))
 presList<-tm_map(presList, stemDocument) #requires SnowballC package 
+#presList<-tm_map(presList, PlainTextDocument)
 
 class(presList)
 names(presList)
@@ -141,7 +145,9 @@ names(presList)
 ctrl<-list(removePunctuation = list(preserve_intra_word_dashes = TRUE),
            stopwords=c("bush","Bush"),
            stemming=TRUE,
-           wordLengths=c(4,Inf))
+           wordLengths=c(8,Inf))
+
+
 #Word frequency vectors. 
 sort(termFreq(presList[["HWBush"]],control=ctrl))
 sort(termFreq(presList[["Clinton"]],control=ctrl))
@@ -153,9 +159,11 @@ library(proxy)
 #Slot 6 contains the text. 
 presTDM<-TermDocumentMatrix(presList)
 #dissimilarity(presTDM,method="eJaccard")
-findAssocs(presTDM,c("will","vision"),corlimit=c(0.9,0.9))
-findFreqTerms(presTDM,20,30)
+findAssocs(presTDM,c("will","vision"),corlimit=c(0.97,0.97))
+findFreqTerms(presTDM,50,Inf)
 removeSparseTerms(presTDM,0.5)
+
+
 #1 means it has to be in all documents
 #0 means we keep all words
 #0.5 means we keep words that appear in at least half of the documents.  
@@ -208,7 +216,7 @@ presTDM$dimnames$Docs<-substring(vecList,1,5)
 
 
 
-findFreqTerms(presTDM,300)
+findFreqTerms(presTDM,700)
 findAssocs(presTDM,"government",0.7)
 
 
